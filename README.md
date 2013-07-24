@@ -1,4 +1,4 @@
 PHP-IMDb-Scraper
 ================
 
-PHP IMDb Scraping API
+Demo: http://lab.abhinayrathore.com/imdb/
