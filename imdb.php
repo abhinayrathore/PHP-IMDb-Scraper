@@ -1,13 +1,13 @@
 <?php
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Free PHP IMDb Scraper API for the new IMDb Template.
-// Version: 4.1
+// Version: 4.2
 // Author: Abhinay Rathore
 // Website: http://www.AbhinayRathore.com
 // Blog: http://web3o.blogspot.com
 // Demo: http://lab.abhinayrathore.com/imdb/
 // More Info: http://web3o.blogspot.com/2010/10/php-imdb-scraper-for-new-imdb-template.html
-// Last Updated: June 10, 2013
+// Last Updated: Sep 17, 2013
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Imdb
@@ -101,9 +101,9 @@ class Imdb
 	// Scan all Release Dates.
 	private function getReleaseDates($html){
 		$releaseDates = array();
-		foreach($this->match_all('/<tr>(.*?)<\/tr>/ms', $this->match('/Date<\/th><\/tr>(.*?)<\/table>/ms', $html, 1), 1) as $r) {
-			$country = trim(strip_tags($this->match('/<td><b>(.*?)<\/b><\/td>/ms', $r, 1)));
-			$date = trim(strip_tags($this->match('/<td align="right">(.*?)<\/td>/ms', $r, 1)));
+		foreach($this->match_all('/<tr.*?>(.*?)<\/tr>/ms', $this->match('/<table id="release_dates".*?>(.*?)<\/table>/ms', $html, 1), 1) as $r) {
+			$country = trim(strip_tags($this->match('/<td>(.*?)<\/td>/ms', $r, 1)));
+			$date = trim(strip_tags($this->match('/<td class="release_date">(.*?)<\/td>/ms', $r, 1)));
 			array_push($releaseDates, $country . " = " . $date);
 		}
 		return array_filter($releaseDates);
@@ -112,10 +112,10 @@ class Imdb
 	// Scan all AKA Titles.
 	private function getAkaTitles($html){
 		$akaTitles = array();
-		foreach($this->match_all('/<tr>(.*?)<\/tr>/msi', $this->match('/Also Known As(.*?)<\/table>/ms', $html, 1), 1) as $m) {
+		foreach($this->match_all('/<tr.*?>(.*?)<\/tr>/msi', $this->match('/<table id="akas".*?>(.*?)<\/table>/ms', $html, 1), 1) as $m) {
 			$akaTitleMatch = $this->match_all('/<td>(.*?)<\/td>/ms', $m, 1);
-			$akaTitle = trim($akaTitleMatch[0]);
-			$akaCountry = trim($akaTitleMatch[1]);
+			$akaCountry = trim($akaTitleMatch[0]);
+			$akaTitle = trim($akaTitleMatch[1]);
 			array_push($akaTitles, $akaTitle . " = " . $akaCountry);
 		}
 		return array_filter($akaTitles);
@@ -127,7 +127,7 @@ class Imdb
 		$html = $this->geturl($url);
 		$media = array();
 		$media = array_merge($media, $this->scanMediaImages($html));
-		foreach($this->match_all('/<a href="\?page=(.*?)">/ms', $this->match('/<span style="padding: 0 1em;">(.*?)<\/span>/ms', $html, 1), 1) as $p) {
+		foreach($this->match_all('/<a.*?>(\d*)<\/a>/ms', $this->match('/<span class="page_list">(.*?)<\/span>/ms', $html, 1), 1) as $p) {
 			$html = $this->geturl($url . "?page=" . $p);
 			$media = array_merge($media, $this->scanMediaImages($html));
 		}
@@ -137,7 +137,7 @@ class Imdb
 	// Scan all media images.
 	private function scanMediaImages($html){
 		$pics = array();
-		foreach($this->match_all('/src="(.*?)"/ms', $this->match('/<div class="thumb_list" style="font-size: 0px;">(.*?)<\/div>/ms', $html, 1), 1) as $i) {
+		foreach($this->match_all('/src="(.*?)"/msi', $this->match('/<div class="media_index_thumb_list".*?>(.*?)<\/div>/msi', $html, 1), 1) as $i) {
 			array_push($pics, preg_replace('/_V1\..*?.jpg/ms', "_V1._SY0.jpg", $i));
 		}
 		return array_filter($pics);
