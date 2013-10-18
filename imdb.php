@@ -1,13 +1,13 @@
 <?php
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Free PHP IMDb Scraper API for the new IMDb Template.
-// Version: 4.2
+// Version: 4.3
 // Author: Abhinay Rathore
 // Website: http://www.AbhinayRathore.com
 // Blog: http://web3o.blogspot.com
 // Demo: http://lab.abhinayrathore.com/imdb/
 // More Info: http://web3o.blogspot.com/2010/10/php-imdb-scraper-for-new-imdb-template.html
-// Last Updated: Sep 17, 2013
+// Last Updated: Oct 18, 2013
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Imdb
@@ -86,7 +86,7 @@ class Imdb
         
 		if($getExtraInfo == true) {
 			$plotPageHtml = $this->geturl("${imdbUrl}plotsummary");
-			$arr['storyline'] = trim(strip_tags($this->match('/<p class="plotpar">(.*?)(<i>|<\/p>)/ms', $plotPageHtml, 1)));
+			$arr['storyline'] = trim(strip_tags($this->match('/<li class="odd">.*?<p>(.*?)(<|<\/p>)/ms', $plotPageHtml, 1)));
 			$releaseinfoHtml = $this->geturl("http://www.imdb.com/title/" . $arr['title_id'] . "/releaseinfo");
 			$arr['also_known_as'] = $this->getAkaTitles($releaseinfoHtml);
 			$arr['release_dates'] = $this->getReleaseDates($releaseinfoHtml);
