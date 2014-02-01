@@ -7,7 +7,7 @@
 // Blog: http://web3o.blogspot.com
 // Demo: http://lab.abhinayrathore.com/imdb/
 // More Info: http://web3o.blogspot.com/2010/10/php-imdb-scraper-for-new-imdb-template.html
-// Last Updated: Feb 1, 2013
+// Last Updated: Feb 1, 2014
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Imdb
