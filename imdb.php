@@ -1,13 +1,13 @@
 <?php
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Free PHP IMDb Scraper API for the new IMDb Template.
-// Version: 4.3
+// Version: 4.4
 // Author: Abhinay Rathore
 // Website: http://www.AbhinayRathore.com
 // Blog: http://web3o.blogspot.com
 // Demo: http://lab.abhinayrathore.com/imdb/
 // More Info: http://web3o.blogspot.com/2010/10/php-imdb-scraper-for-new-imdb-template.html
-// Last Updated: Oct 18, 2013
+// Last Updated: Feb 1, 2013
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Imdb
@@ -165,6 +165,25 @@ class Imdb
 			$videos[] = "http://www.imdb.com${v}";
 		}
 		return array_filter($videos);
+	}
+	
+	// Get Top 250 Movie List
+	public function getTop250(){
+		$html = $this->geturl("http://www.imdb.com/chart/top");
+		$top250 = array();
+		$rank = 1;
+		foreach ($this->match_all('/<tr class="(even|odd)">(.*?)<\/tr>/ms', $html, 2) as $m) {
+			$id = $this->match('/<td class="titleColumn">.*?<a href="\/title\/(tt\d+)\/.*?"/msi', $m, 1);
+			$title = $this->match('/<td class="titleColumn">.*?<a.*?>(.*?)<\/a>/msi', $m, 1);
+			$year = $this->match('/<td class="titleColumn">.*?<span class="secondaryInfo">\((.*?)\)<\/span>/msi', $m, 1);
+			$rating = $this->match('/<td class="ratingColumn"><strong.*?>(.*?)<\/strong>/msi', $m, 1);
+			$poster = $this->match('/<td class="posterColumn">.*?<img src="(.*?)"/msi', $m, 1);
+			$poster = preg_replace('/_V1.*?.jpg/ms', "_V1._SY200.jpg", $poster);
+			$url = "http://www.imdb.com/title/${id}/";
+			$top250[] = array("id"=>$id, "rank"=>$rank, "title"=>$title, "year"=>$year, "rating"=>$rating, "poster"=>$poster, "url"=>$url);
+			$rank++;
+		}
+		return $top250;
 	}
 
 	//************************[ Extra Functions ]******************************
