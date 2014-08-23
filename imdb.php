@@ -29,7 +29,10 @@ class Imdb
 	public function getMovieInfoById($imdbId, $getExtraInfo = true)
 	{
 		$arr = array();
-		$imdbUrl = "http://www.imdb.com/title/" . trim($imdbId) . "/";
+		$imdbId = trim($imdbId);
+		$imdbId = preg_replace('/^[^\d]+\/?t?t?/','', $imdbId);
+		$imdbId = preg_replace('/[^\d](.*)+/','', $imdbId);
+		$imdbUrl = "http://www.imdb.com/title/tt$imdbId/";
 		return $this->scrapeMovieInfo($imdbUrl, $getExtraInfo);
 	}
 	
