@@ -7,7 +7,7 @@
 // Blog: http://web3o.blogspot.com
 // Demo: http://lab.abhinayrathore.com/imdb/
 // More Info: http://web3o.blogspot.com/2010/10/php-imdb-scraper-for-new-imdb-template.html
-// Last Updated: Feb 1, 2014
+// Last Updated: May 6, 2014
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Imdb
@@ -62,12 +62,12 @@ class Imdb
 		$arr['mpaa_rating'] = $this->match('/MPAA<\/a>:<\/h5><div class="info-content">Rated (G|PG|PG-13|PG-14|R|NC-17|X) /ms', $html, 1);
 		$arr['release_date'] = $this->match('/Release Date:<\/h5>.*?<div class="info-content">.*?([0-9][0-9]? (January|February|March|April|May|June|July|August|September|October|November|December) (19|20)[0-9][0-9])/ms', $html, 1);
 		$arr['tagline'] = trim(strip_tags($this->match('/Tagline:<\/h5>.*?<div class="info-content">(.*?)(<a|<\/div)/ms', $html, 1)));
-		$arr['plot'] = trim(strip_tags($this->match('/Plot:<\/h5>.*?<div class="info-content">(.*?)(<a|<\/div)/ms', $html, 1)));
+		$arr['plot'] = trim(strip_tags($this->match('/Plot:<\/h5>.*?<div class="info-content">(.*?)(<a|<\/div|\|)/ms', $html, 1)));
 		$arr['plot_keywords'] = $this->match_all('/<a.*?>(.*?)<\/a>/ms', $this->match('/Plot Keywords:<\/h5>.*?<div class="info-content">(.*?)<\/div/ms', $html, 1), 1);
-		$arr['poster'] = $this->match('/<div class="photo">.*?<a name="poster".*?><img.*?src="(.*?)".*?<\/div>/ms', $html, 1);
+		$arr['poster'] = $this->match('/<a name="poster".*?><img.*?id="primary-poster".*?src="(.*?)"/ms', $html, 1);
 		$arr['poster_large'] = "";
 		$arr['poster_full'] = "";
-		if ($arr['poster'] != '' && strpos($arr['poster'], "media-imdb.com") > 0) { //Get large and small posters
+		if ($arr['poster'] != '' && strpos($arr['poster'], "amazon.com") > 0) { //Get large and small posters
 			$arr['poster'] = preg_replace('/_V1.*?.jpg/ms', "_V1._SY200.jpg", $arr['poster']);
 			$arr['poster_large'] = preg_replace('/_V1.*?.jpg/ms', "_V1._SY500.jpg", $arr['poster']);
 			$arr['poster_full'] = preg_replace('/_V1.*?.jpg/ms', "_V1._SY0.jpg", $arr['poster']);
@@ -80,7 +80,7 @@ class Imdb
 		if(empty($arr['oscars']) && preg_match("/Won Oscar\./i", $html)) $arr['oscars'] = "1";
 		$arr['awards'] = trim($this->match('/(\d+) wins/ms',$html, 1));
 		$arr['nominations'] = trim($this->match('/(\d+) nominations/ms',$html, 1));
-		$arr['votes'] = $this->match('/>(\d+,?\d*) votes</ms', $html, 1);
+		$arr['votes'] = $this->match('/>([0-9,]*) votes</ms', $html, 1);
 		$arr['language'] = $this->match_all('/<a.*?>(.*?)<\/a>/ms', $this->match('/Language.?:(.*?)(<\/div>|>.?and )/ms', $html, 1), 1);
         $arr['country'] = $this->match_all('/<a.*?>(.*?)<\/a>/ms', $this->match('/Country:(.*?)(<\/div>|>.?and )/ms', $html, 1), 1);
         
@@ -161,7 +161,7 @@ class Imdb
 	public function getVideos($titleId){
 		$html = $this->geturl("http://www.imdb.com/title/${titleId}/videogallery");
 		$videos = array();
-		foreach ($this->match_all('/<a.*?href="(\/video\/imdb\/.*?)".*?>.*?<\/a>/ms', $html, 1) as $v) {
+		foreach ($this->match_all('/<a.*?href="(\/video\/imdb\/vi\d+)".*?>.*?<\/a>/ms', $html, 1) as $v) {
 			$videos[] = "http://www.imdb.com${v}";
 		}
 		return array_filter($videos);
