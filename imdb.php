@@ -141,7 +141,7 @@ class Imdb
 	public function getVideos($titleId){
 		$html = $this->geturl("http://www.imdb.com/title/${titleId}/videogallery");
 		$videos = array();
-		foreach ($this->match_all('/<a.*?href="\/videoplayer\/(vi\d+).*?".*?>.*?<\/a>/ms', $html, 1) as $v) {
+		foreach ($this->match_all('/<a.*?href="\/videoplayer\/(vi\d+)\?ref_.*?".*?>.*?<\/a>/ms', $html, 1) as $v) {
 			$videos[] = "http://www.imdb.com/video/imdb/${v}";
 		}
 		return array_filter($videos);
