@@ -49,7 +49,7 @@ class Imdb
     $arr['year'] = trim($this->match('/<title>.*?\(.*?(\d{4}).*?\).*?<\/title>/ms', $html, 1));
     $arr['rating'] = $this->match('/<span class="ipl-rating-star__rating">(\d.\d)<\/span>/ms', $html, 1);
     $arr['genres'] = $this->match_all('/<a href="\/genre\/.*?">(.*?)<\/a>/ms', $this->match('/<td.*?>Genres?<\/td>.*?<td>(.*?)<\/td>/ms', $html, 1), 1);
-    $arr['directors'] = $this->match_all_key_value('/<a href="\/name\/(nm\d+).*?>(.*?)<\/a>/ms', $this->match('/Directed by.*?<\/h4>.*?<table.*?>(.*?)<\/table>/ms', $html, 1));
+    $arr['directors'] = $this->match_all_key_value('/<a href="\/name\/(nm\d+).*?>(.*?)<\/a>/ms', $this->match('/[^"]Directed by.*?<\/h4>.*?<table.*?>(.*?)<\/table>/ms', $html, 1));
     $arr['writers'] = $this->match_all_key_value('/<a href="\/name\/(nm\d+).*?>(.*?)<\/a>/ms', $this->match('/Written by.*?<\/h4>.*?<table.*?>(.*?)<\/table>/ms', $html, 1));
     $arr['cast'] = $this->match_all_key_value('/<a href="\/name\/(nm\d+).*?>(.*?)<\/a>/ms', $this->match('/Cast.*?<\/h4>.*?<table.*?>(.*?)<\/table>/ms', $html, 1));
     $arr['cast'] = array_slice($arr['cast'], 0, 30);
